@@ -20,7 +20,8 @@
             [(ngModel)]="nValue"
             min="0"
             placeholder="e.g., 10, 100, 100000"
-            class="input-primary flex-1">
+            class="input-primary flex-1"
+            (keydown.enter)="getLabSeq()" />
           <button
             (click)="getLabSeq()"
             [disabled]="loading || nValue < 0"
