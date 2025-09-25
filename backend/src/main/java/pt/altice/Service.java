@@ -1,13 +1,17 @@
 package pt.altice;
 
+
 import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.math.BigInteger;
+import java.util.logging.Logger;
 
 
 @ApplicationScoped
 public class Service {
+
+    private static final Logger logger = Logger.getLogger(Service.class.getName());
 
     //base cases
     public BigInteger computeLabSeq(int n) {
@@ -21,6 +25,8 @@ public class Service {
 
     @CacheResult(cacheName = "labSeqCache")
     public BigInteger calcLabSeq(int n) {
+
+        logger.info("Calculating LabSeq for n=" + n);
 
         if (n < 0) {
             throw new IllegalArgumentException("Index must be greater or equal to zero");
