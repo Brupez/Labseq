@@ -5,6 +5,7 @@ import io.quarkus.cache.CacheResult;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.math.BigInteger;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 
@@ -13,14 +14,39 @@ public class Service {
 
     private static final Logger logger = Logger.getLogger(Service.class.getName());
 
-    //base cases
+    private final ConcurrentHashMap<Integer, BigInteger> memo = new ConcurrentHashMap<>();
+
     public BigInteger computeLabSeq(int n) {
+
+        if (memo.containsKey(n)) {
+            return memo.get(n);
+        }
+
+        //base cases
         if (n==0) return BigInteger.ZERO;
         if (n==1) return BigInteger.ONE;
         if (n==2) return BigInteger.ZERO;
         if (n==3) return BigInteger.ONE;
 
-        return computeLabSeq(n-4).add(computeLabSeq(n-3));
+        // store only the last 4 values to save memory
+        BigInteger nMinus4 = BigInteger.ZERO;
+        BigInteger nMinus3 = BigInteger.ONE;
+        BigInteger nMinus2 = BigInteger.ZERO;
+        BigInteger nMinus1 = BigInteger.ONE;
+        BigInteger current = BigInteger.ZERO;
+
+        for (int i = 4; i <= n; i++) {
+            current = nMinus4.add(nMinus3);
+
+            memo.put(n, current);
+
+            nMinus4 = nMinus3;
+            nMinus3 = nMinus2;
+            nMinus2 = nMinus1;
+            nMinus1 = current;
+        }
+
+        return current;
     }
 
     @CacheResult(cacheName = "labSeqCache")

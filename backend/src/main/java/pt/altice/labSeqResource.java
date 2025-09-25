@@ -20,7 +20,7 @@ import java.math.BigInteger;
 public class labSeqResource {
 
     @Inject
-    Service labSecService;
+    Service labSeqService;
 
     @GET
     @Path("/{n}")
@@ -39,7 +39,7 @@ public class labSeqResource {
             description = "The n-th term of the Lab sequence",
             content = @Content(
                     mediaType = "application/json",
-                    schema = @Schema(implementation = BigInteger.class)
+                    schema = @Schema(implementation = labSeqResource.class)
             )
     )
     @APIResponse(
@@ -62,7 +62,7 @@ public class labSeqResource {
                     .build();
             }
 
-            BigInteger response = labSecService.calcLabSeq(n);
+            BigInteger response = labSeqService.calcLabSeq(n);
             return Response.ok(response).build();
 
         } catch (Exception e) {
