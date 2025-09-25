@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LabSeqResponse, LabSeqService} from '../services/service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-labseq',
@@ -15,7 +16,7 @@ export class AppComponent {
   loading: boolean = false;
   error: string = '';
 
-  constructor(private labSeqService: LabSeqService) {}
+  constructor(private labSeqService: LabSeqService, private http: HttpClient) {}
 
   getLabSeq() {
 
@@ -28,10 +29,17 @@ export class AppComponent {
     this.error = '';
     this.result = '';
 
-    this.labSeqService.getLabSeq(this.nValue).subscribe({
-      next: (response: LabSeqResponse) => {
-        this.result = response.value;
+
+    this.http.get(`http://localhost:8080/labseq/${this.nValue}`, { responseType: 'text'}).subscribe({
+      next: (response: string) => {
+        this.result = response;
+        console.log('LabSeq result:', response);
         this.loading = false;
+
+        if(response){
+          console.log('✅ Object keys:', Object.keys(response));
+          console.log('✅ Full object:', JSON.stringify(response, null, 2));
+        }
       },
 
       error: (err) => {

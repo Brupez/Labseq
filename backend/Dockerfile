@@ -1,4 +1,15 @@
-FROM ubuntu:latest
-LABEL authors="BrunoLopes"
+FROM maven:3.9.4-eclipse-temurin-21 AS build
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+FROM openjdk:21-jdk-slim
+WORKDIR /app
+COPY --from=build /app/target/quarkus-app/ ./
+EXPOSE 8080
+
+CMD ["java", "-jar", "quarkus-run.jar"]
